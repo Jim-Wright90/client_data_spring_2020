@@ -1,0 +1,219 @@
+---
+title: "Client Pilot Data Spring 2020"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    social: menu
+    source_code: embed
+    vertical_layout: scroll
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(rio)
+library(here)
+library(colorblindr)
+library(gghighlight)
+library(forcats)
+library(ggrepel)
+library(gt)
+library(knitr)
+library(kableExtra)
+library(reactable)
+library(plotly)
+library(patchwork)
+
+opts_chunk$set(echo = FALSE,
+               fig.width = 5,
+               fig.height = 6)
+
+theme_set(theme_minimal(base_size = 8))
+
+outcome <- import(here("data", "client_data_outcome.sav"),
+               setclass = "tbl_df") %>% 
+  characterize() %>% 
+  janitor::clean_names() 
+
+rm_prge <- import(here("data", "repeated_measures_prge.sav"),
+               setclass = "tbl_df") %>% 
+  characterize() %>% 
+  janitor::clean_names() 
+
+head(outcome)
+head(rm_prge)
+
+
+```
+
+# PRGE 
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### PRGE Outcome Measures
+```{r outcome measures data organization, include=FALSE}
+head(outcome)
+
+outcome_tidy <- outcome %>% 
+  select(1:11) %>% 
+  rename("PCSS Pre Score" = pcss_pre,
+         "PCSS Post Score" = pcss_post,
+         "HIT Pre Score" = hit_pre,
+         "HIT Post Score" = hit_post,
+         "CLASS Pre Score" = class_total_pre,
+         "CLASS Post Score" = class_total_post,
+         "BRIEF SR Pre Score" = brief_pre_self,
+         "BRIEF Parent Pre Score" = brief_pre_inf,
+         "BRIEF SR Post Score" = brief_post_self,
+         "BRIEF Parent Post Score" = brief_post_inf) %>% 
+  pivot_longer(
+    cols = c(2:11),
+    names_to = "measure",
+    values_to = "score"
+  )
+
+ggplot(outcome_tidy, aes(measure, score)) +
+  geom_col() +
+  coord_flip()
+
+head(outcome)
+
+brief <- outcome %>% 
+  select(client, brief_pre_self, brief_post_self, brief_pre_inf, brief_post_inf)
+
+brief_tidy <- brief %>% 
+  rename("BRIEF SR Pre Score" = brief_pre_self,
+         "BRIEF SR Post Score" = brief_post_self,
+         "BRIEF Parent Pre Score" = brief_pre_inf,
+         "BRIEF Parent Post Score" = brief_post_inf) %>% 
+  pivot_longer(
+    cols = c(2:5),
+    names_to = "measure",
+    values_to = "score"
+  )
+
+class <- outcome %>% 
+  select(client, class_total_pre, class_total_post) %>% 
+  rename("CLASS Pre Score" = class_total_pre,
+         "CLASS Post Score" = class_total_post)
+
+class_tidy <- class %>% 
+   pivot_longer(
+    cols = c(2:3),
+    names_to = "measure",
+    values_to = "score"
+  )
+
+symptoms <- outcome %>% 
+  select(client, pcss_pre, pcss_post, hit_pre, hit_post) %>% 
+  rename("PCSS Pre Score" = pcss_pre,
+         "PCSS Post Score" = pcss_post,
+         "HIT Pre Score" = hit_pre,
+         "HIT Post Score" = hit_post) %>% 
+  pivot_longer(
+    cols = c(2:5),
+    names_to = "measure",
+    values_to = "score"
+  )
+```
+
+```{r outcome plots, include=FALSE}
+
+p1 <- ggplot(brief_tidy, aes(measure, score)) +
+  geom_col(fill = "blue", 
+           alpha = 0.7) +
+  coord_flip() +
+  geom_text(aes(measure, score, label = score),
+            nudge_y = -3,
+            color = "white") +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.title=element_text(size=10),
+        strip.text = element_text(size = 10)) +
+  labs(x = "",
+       y = "Score",
+       title = "PRGE BRIEF Scores") 
+p1
+
+p2 <- ggplot(class_tidy, aes(measure, score)) +
+  geom_col(fill = "blue", 
+           alpha = 0.7) +
+  coord_flip() +
+  geom_text(aes(measure, score, label = score),
+            nudge_y = -3,
+            color = "white") +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.title=element_text(size=10),
+        strip.text = element_text(size = 10)) +
+  labs(x = "",
+       y = "Score",
+       title = "PRGE CLASS Scores") 
+ p2
+
+
+p3 <- ggplot(symptoms, aes(measure, score)) +
+  geom_col(fill = "blue", 
+           alpha = 0.7) +
+  coord_flip() +
+  geom_text(aes(measure, score, label = score),
+            nudge_y = -3,
+            color = "white") +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.title=element_text(size=10),
+        strip.text = element_text(size = 10)) +
+  labs(x = "",
+       y = "Score",
+       title = "PRGE Symptom Checklist Results") 
+
+p3
+```
+
+
+```{r pathwork outcomes, include=TRUE}
+p1 + p2 + p3 +plot_layout(ncol = 1)
+
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### PRGE Repeated Measures 
+
+```{r repeated measures data cleaning, include=FALSE}
+
+head(rm_prge)
+
+track <- rm_prge %>% 
+  select(session, status)
+
+ggplot(track, aes(session, status)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(limits = c(0, 10),
+                     breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  scale_y_continuous(limits = c(0, 6),
+                     breaks = c(1, 2, 3, 4, 5, 6)) +
+  theme_classic()
+
+effort_data <- rm_prge %>% 
+  select(session, effort)
+
+ggplot(effort_data, aes(session, effort)) +
+  geom_line() +
+  geom_point()
+
+```
