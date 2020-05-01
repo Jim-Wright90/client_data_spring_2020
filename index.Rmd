@@ -136,7 +136,7 @@ p1 <- ggplot(brief_tidy, aes(measure, score)) +
         strip.text = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
-       title = "PRGE BRIEF Scores") 
+       title = "BRIEF Scores") 
 p1
 
 p2 <- ggplot(class_tidy, aes(measure, score)) +
@@ -155,7 +155,7 @@ p2 <- ggplot(class_tidy, aes(measure, score)) +
         strip.text = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
-       title = "PRGE CLASS Scores") 
+       title = "CLASS Scores") 
  p2
 
 
@@ -175,7 +175,7 @@ p3 <- ggplot(symptoms, aes(measure, score)) +
         strip.text = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
-       title = "PRGE Symptom Checklist Results") 
+       title = "Symptom Checklist Results") 
 
 p3
 ```
@@ -211,7 +211,7 @@ p4 <- ggplot(track, aes(session, status)) +
         strip.text = element_text(size = 10)) +
   labs(x = "Session",
        y = "Number of Times Required to Reread Content",
-       title = "PRGE Status Tracking Goal") 
+       title = "Status Tracking Goal") 
 
 p4
 
