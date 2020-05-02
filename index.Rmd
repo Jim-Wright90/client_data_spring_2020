@@ -80,6 +80,7 @@ ggplot(outcome_tidy, aes(measure, score)) +
 head(outcome)
 
 brief <- outcome %>% 
+  filter(client == "PRGE") %>% 
   select(client, brief_pre_self, brief_post_self, brief_pre_inf, brief_post_inf)
 
 brief_tidy <- brief %>% 
@@ -94,6 +95,7 @@ brief_tidy <- brief %>%
   )
 
 class <- outcome %>% 
+  filter(client == "PRGE") %>% 
   select(client, class_total_pre, class_total_post) %>% 
   rename("CLASS Pre Score" = class_total_pre,
          "CLASS Post Score" = class_total_post)
@@ -106,6 +108,7 @@ class_tidy <- class %>%
   )
 
 symptoms <- outcome %>% 
+  filter(client == "PRGE") %>% 
   select(client, pcss_pre, pcss_post) %>% 
   rename("PCSS Pre Score" = pcss_pre,
          "PCSS Post Score" = pcss_post) %>% 
@@ -116,6 +119,7 @@ symptoms <- outcome %>%
   )
 
 hit <- outcome %>% 
+  filter(client == "PRGE") %>% 
   select(client, hit_pre, hit_post) %>% 
   rename("HIT Pre Score" = hit_pre,
          "HIT Post Score" = hit_post) %>% 
@@ -129,12 +133,15 @@ hit <- outcome %>%
 ```{r outcome plots, include=FALSE}
 
 p1 <- ggplot(brief_tidy, aes(measure, score)) +
+  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 65, ymax = 100),
+            fill = "lightgreen") +
+  geom_hline(yintercept = 65, 
+             color = "darkgreen",
+             size = 3) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
   scale_y_continuous(limits = c(0, 100),
                      breaks = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
-  geom_hline(yintercept = 65,
-             color = "red") +
   coord_flip() +
   geom_text(aes(measure, score, label = score),
             nudge_y = -3,
@@ -147,8 +154,10 @@ p1 <- ggplot(brief_tidy, aes(measure, score)) +
         axis.title=element_text(size=10),
         strip.text = element_text(size = 10)) +
   labs(x = "",
-       y = "Score",
-       title = "BRIEF Scores") 
+       y = "T-score",
+       title = "BRIEF Scores",
+       caption = "T-scores Above 65 are Clinically Significant") 
+
 p1
 
 p2 <- ggplot(class_tidy, aes(measure, score)) +
@@ -174,6 +183,9 @@ p2 <- ggplot(class_tidy, aes(measure, score)) +
 
 
 p3 <- ggplot(symptoms, aes(measure, score)) +
+  geom_hline(yintercept = 30, 
+             color = "darkgreen",
+             size = 3) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
   coord_flip() +
@@ -191,11 +203,15 @@ p3 <- ggplot(symptoms, aes(measure, score)) +
         strip.text = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
-       title = "PCSS Results") 
+       title = "PCSS Results",
+       caption = "Scores Greater than 30 Suggest Symptoms Impact Daily Functioning") 
 
 p3
 
 p3a <- ggplot(hit, aes(measure, score)) +
+  geom_hline(yintercept = 50, 
+             color = "darkgreen",
+             size = 3) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
   coord_flip() +
@@ -213,15 +229,31 @@ p3a <- ggplot(hit, aes(measure, score)) +
         strip.text = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
-       title = "HIT Results") 
+       title = "HIT Results",
+       caption = "Scores of 50 or Greater Suggest Headaches Significantly Impact Daily Functioning") 
 
 p3a
 ```
 
 
-```{r pathwork outcomes, include=TRUE, fig.align="center", fig.width=10, fig.height=7}
-p1 + p2 + p3 + p3a + plot_layout(ncol = 1)
+```{r prge brief, include=TRUE, fig.width=6}
+p1
 
+```
+
+```{r prge class, include=TRUE, fig.width=6}
+p2
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+```{r prge pcss, include=TRUE}
+p3
+```
+
+```{r prge hit, include=TRUE}
+p3a
 ```
 
 # PRGE Repeated Meausures 
@@ -316,3 +348,184 @@ p5
 ```{r helpfulness, include=TRUE, fig.align="left"}
 p6
 ```
+
+
+# FALO Outcome Measures
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+```{r falo measures data organization, include=FALSE}
+head(outcome)
+
+falo <- outcome %>% 
+  filter(client == "FALO")
+
+brief_falo <- falo %>% 
+  select(client, brief_pre_self, brief_post_self, brief_pre_inf, brief_post_inf) %>% 
+  rename("BRIEF SR Pre Score" = brief_pre_self,
+         "BRIEF SR Post Score" = brief_post_self,
+         "BRIEF Parent Pre Score" = brief_pre_inf,
+         "BRIEF Parent Post Score" = brief_post_inf) %>% 
+  pivot_longer(
+    cols = c(2:5),
+    names_to = "measure",
+    values_to = "score"
+  )
+
+class_falo <- falo %>% 
+  select(client, class_total_pre, class_total_post) %>% 
+  rename("CLASS Pre Score" = class_total_pre,
+         "CLASS Post Score" = class_total_post) %>% 
+   pivot_longer(
+    cols = c(2:3),
+    names_to = "measure",
+    values_to = "score"
+  )
+
+pcss_falo <- falo %>% 
+  select(client, pcss_pre, pcss_post) %>% 
+  rename("PCSS Pre Score" = pcss_pre,
+         "PCSS Post Score" = pcss_post) %>% 
+  pivot_longer(
+    cols = c(2:3),
+    names_to = "measure",
+    values_to = "score"
+  )
+
+hit_falo <- falo %>% 
+  select(client, hit_pre, hit_post) %>% 
+  rename("HIT Pre Score" = hit_pre,
+         "HIT Post Score" = hit_post) %>% 
+   pivot_longer(
+    cols = c(2:3),
+    names_to = "measure",
+    values_to = "score"
+  )
+```
+
+```{r falo plots, include=FALSE}
+
+p7 <- ggplot(brief_falo, aes(measure, score)) +
+  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 65, ymax = 100),
+            fill = "lightgreen") +
+  geom_hline(yintercept = 65, 
+             color = "darkgreen",
+             size = 3) +
+  geom_col(fill = "blue", 
+           alpha = 0.7) +
+  scale_y_continuous(limits = c(0, 100),
+                     breaks = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
+  coord_flip() +
+  geom_text(aes(measure, score, label = score),
+            nudge_y = -3,
+            color = "white") +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.title=element_text(size=10),
+        strip.text = element_text(size = 10)) +
+  labs(x = "",
+       y = "T-score",
+       title = "BRIEF Scores",
+       caption = "T-scores Above 65 are Clinically Significant") 
+
+p7
+
+p8 <- ggplot(class_falo, aes(measure, score)) +
+  geom_col(fill = "blue", 
+           alpha = 0.7) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 60),
+                     breaks = c(10, 20, 30, 40, 50, 60)) +
+  geom_text(aes(measure, score, label = score),
+            nudge_y = -3,
+            color = "white") +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.title=element_text(size=10),
+        strip.text = element_text(size = 10)) +
+  labs(x = "",
+       y = "Score",
+       title = "CLASS Scores") 
+ p8
+
+
+p9 <- ggplot(pcss_falo, aes(measure, score)) +
+  geom_hline(yintercept = 30, 
+             color = "darkgreen",
+             size = 3) +
+  geom_col(fill = "blue", 
+           alpha = 0.7) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 140),
+                     breaks = c(20, 40, 60, 80, 100, 120, 140)) + 
+  geom_text(aes(measure, score, label = score),
+            nudge_y = -3.5,
+            color = "white") +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.title=element_text(size=10),
+        strip.text = element_text(size = 10)) +
+  labs(x = "",
+       y = "Score",
+       title = "PCSS Results",
+       caption = "Scores Greater than 30 Suggest Symptoms Impact Daily Functioning") 
+
+p9
+
+p10 <- ggplot(hit_falo, aes(measure, score)) +
+  geom_hline(yintercept = 50, 
+             color = "darkgreen",
+             size = 3) +
+  geom_col(fill = "blue", 
+           alpha = 0.7) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 60),
+                     breaks = c(10, 20, 30, 40, 50, 60)) + 
+  geom_text(aes(measure, score, label = score),
+            nudge_y = -3,
+            color = "white") +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.title=element_text(size=10),
+        strip.text = element_text(size = 10)) +
+  labs(x = "",
+       y = "Score",
+       title = "HIT Results",
+       caption = "Scores of 50 or Greater Suggest Headaches Significantly Impact Daily Functioning") 
+
+p10
+```
+
+
+```{r falo brief, include=TRUE, fig.width=6}
+p7
+
+```
+
+```{r falo class, include=TRUE, fig.width=6}
+p8
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+```{r falo pcss, include=TRUE}
+p9
+```
+
+```{r falo hit, include=TRUE}
+p10
+```
+
