@@ -181,7 +181,7 @@ p3
 ```
 
 
-```{r pathwork outcomes, include=TRUE}
+```{r pathwork outcomes, include=TRUE, fig.align="center", fig.width=10, fig.height=7}
 p1 + p2 + p3 +plot_layout(ncol = 1)
 
 ```
@@ -199,7 +199,7 @@ track <- rm_prge %>%
 
 p4 <- ggplot(track, aes(session, status)) +
   geom_line() +
-  geom_point() +
+  geom_point(size = 2) +
   scale_x_continuous(limits = c(0, 10),
                      breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   scale_y_continuous(limits = c(0, 6),
@@ -221,7 +221,7 @@ effort_data <- rm_prge %>%
 
 p5 <- ggplot(effort_data, aes(session, effort)) +
   geom_line() +
-  geom_point() +
+  geom_point(size = 2) +
   scale_x_continuous(limits = c(0, 10),
                      breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   scale_y_continuous(limits = c(0, 4),
@@ -243,7 +243,7 @@ helpfulness <- rm_prge %>%
 
 p6 <- ggplot(helpfulness, aes(session, help)) +
   geom_line() +
-  geom_point() +
+  geom_point(size = 2) +
   scale_x_continuous(limits = c(0, 10),
                      breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   scale_y_continuous(limits = c(0, 5),
@@ -261,7 +261,7 @@ p6 <- ggplot(helpfulness, aes(session, help)) +
 p6
 ```
 
-```{r status, include=TRUE}
+```{r status, include=TRUE, fig.align="center"}
 p4 
 
 ```
@@ -270,11 +270,11 @@ Column {data-width=350}
 -----------------------------------------------------------------------
 
 
-```{r}
+```{r effort, include=TRUE, fig.align="left"}
 p5
 ```
 
 
-```{r}
+```{r helpfulness, include=TRUE, fig.align="left"}
 p6
 ```
