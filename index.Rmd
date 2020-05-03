@@ -84,10 +84,10 @@ brief <- outcome %>%
   select(client, brief_pre_self, brief_post_self, brief_pre_inf, brief_post_inf)
 
 brief_tidy <- brief %>% 
-  rename("BRIEF SR Pre Score" = brief_pre_self,
-         "BRIEF SR Post Score" = brief_post_self,
-         "BRIEF Parent Pre Score" = brief_pre_inf,
-         "BRIEF Parent Post Score" = brief_post_inf) %>% 
+  rename("Self Report Pre" = brief_pre_self,
+         "Self Report Post" = brief_post_self,
+         "Parent Report Pre" = brief_pre_inf,
+         "Parent Report Post" = brief_post_inf) %>% 
   pivot_longer(
     cols = c(2:5),
     names_to = "measure",
@@ -97,8 +97,8 @@ brief_tidy <- brief %>%
 class <- outcome %>% 
   filter(client == "PRGE") %>% 
   select(client, class_total_pre, class_total_post) %>% 
-  rename("CLASS Pre Score" = class_total_pre,
-         "CLASS Post Score" = class_total_post)
+  rename("Pre Score" = class_total_pre,
+         "Post Score" = class_total_post)
 
 class_tidy <- class %>% 
    pivot_longer(
@@ -110,8 +110,8 @@ class_tidy <- class %>%
 symptoms <- outcome %>% 
   filter(client == "PRGE") %>% 
   select(client, pcss_pre, pcss_post) %>% 
-  rename("PCSS Pre Score" = pcss_pre,
-         "PCSS Post Score" = pcss_post) %>% 
+  rename("Pre Score" = pcss_pre,
+         "Post Score" = pcss_post) %>% 
   pivot_longer(
     cols = c(2:3),
     names_to = "measure",
@@ -121,8 +121,8 @@ symptoms <- outcome %>%
 hit <- outcome %>% 
   filter(client == "PRGE") %>% 
   select(client, hit_pre, hit_post) %>% 
-  rename("HIT Pre Score" = hit_pre,
-         "HIT Post Score" = hit_post) %>% 
+  rename("Pre Score" = hit_pre,
+         "Post Score" = hit_post) %>% 
    pivot_longer(
     cols = c(2:3),
     names_to = "measure",
@@ -131,18 +131,29 @@ hit <- outcome %>%
 ```
 
 ```{r outcome plots, include=FALSE}
+#geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 65, ymax = 100),
+            #fill = "lightgreen") + #insert before geom_col 
+
+brief_positions <- c("Self Report Pre", 
+                     "Self Report Post", 
+                     "Parent Report Pre ", 
+                     "Parent Report Post") 
+
+class_positions <- c("Pre Score", "Post Score")
+
+pcss_positions <- c("Pre Score", "Post Score")
+
+hit_positions <- c("Pre Score", "Post Score")
 
 p1 <- ggplot(brief_tidy, aes(measure, score)) +
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 65, ymax = 100),
-            fill = "lightgreen") +
   geom_hline(yintercept = 65, 
-             color = "darkgreen",
-             size = 3) +
+             linetype = "dashed",
+             size = 1) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
+  scale_x_discrete(limits = brief_positions) +
   scale_y_continuous(limits = c(0, 100),
                      breaks = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
-  coord_flip() +
   geom_text(aes(measure, score, label = score),
             nudge_y = -3,
             color = "white") +
@@ -152,7 +163,8 @@ p1 <- ggplot(brief_tidy, aes(measure, score)) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 10),
         axis.title=element_text(size=10),
-        strip.text = element_text(size = 10)) +
+        strip.text = element_text(size = 10),
+        plot.caption = element_text(size = 10)) +
   labs(x = "",
        y = "T-score",
        title = "BRIEF Scores",
@@ -163,7 +175,7 @@ p1
 p2 <- ggplot(class_tidy, aes(measure, score)) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
-  coord_flip() +
+  scale_x_discrete(limits = class_positions) +
   scale_y_continuous(limits = c(0, 60),
                      breaks = c(10, 20, 30, 40, 50, 60)) +
   geom_text(aes(measure, score, label = score),
@@ -184,11 +196,11 @@ p2 <- ggplot(class_tidy, aes(measure, score)) +
 
 p3 <- ggplot(symptoms, aes(measure, score)) +
   geom_hline(yintercept = 30, 
-             color = "darkgreen",
-             size = 3) +
+             linetype = "dashed",
+             size = 1) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
-  coord_flip() +
+  scale_x_discrete(limits = pcss_positions) +
   scale_y_continuous(limits = c(0, 140),
                      breaks = c(20, 40, 60, 80, 100, 120, 140)) + 
   geom_text(aes(measure, score, label = score),
@@ -200,7 +212,8 @@ p3 <- ggplot(symptoms, aes(measure, score)) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 10),
         axis.title=element_text(size=10),
-        strip.text = element_text(size = 10)) +
+        strip.text = element_text(size = 10),
+        plot.caption = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
        title = "PCSS Results",
@@ -210,11 +223,11 @@ p3
 
 p3a <- ggplot(hit, aes(measure, score)) +
   geom_hline(yintercept = 50, 
-             color = "darkgreen",
-             size = 3) +
+             linetype = "dashed",
+             size = 1) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
-  coord_flip() +
+  scale_x_discrete(limits = hit_positions) +
   scale_y_continuous(limits = c(0, 60),
                      breaks = c(10, 20, 30, 40, 50, 60)) + 
   geom_text(aes(measure, score, label = score),
@@ -226,11 +239,12 @@ p3a <- ggplot(hit, aes(measure, score)) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 10),
         axis.title=element_text(size=10),
-        strip.text = element_text(size = 10)) +
+        strip.text = element_text(size = 10),
+        plot.caption = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
        title = "HIT Results",
-       caption = "Scores of 50 or Greater Suggest Headaches Significantly Impact Daily Functioning") 
+       caption = "Scores of 50 or Greater Suggest Headaches Impact Daily Functioning") 
 
 p3a
 ```
@@ -362,10 +376,10 @@ falo <- outcome %>%
 
 brief_falo <- falo %>% 
   select(client, brief_pre_self, brief_post_self, brief_pre_inf, brief_post_inf) %>% 
-  rename("BRIEF SR Pre Score" = brief_pre_self,
-         "BRIEF SR Post Score" = brief_post_self,
-         "BRIEF Parent Pre Score" = brief_pre_inf,
-         "BRIEF Parent Post Score" = brief_post_inf) %>% 
+  rename("Self Report Pre" = brief_pre_self,
+         "Self Report Post" = brief_post_self,
+         "Parent Report Pre" = brief_pre_inf,
+         "Parent Report Post" = brief_post_inf) %>% 
   pivot_longer(
     cols = c(2:5),
     names_to = "measure",
@@ -374,8 +388,8 @@ brief_falo <- falo %>%
 
 class_falo <- falo %>% 
   select(client, class_total_pre, class_total_post) %>% 
-  rename("CLASS Pre Score" = class_total_pre,
-         "CLASS Post Score" = class_total_post) %>% 
+  rename("Pre Score" = class_total_pre,
+         "Post Score" = class_total_post) %>% 
    pivot_longer(
     cols = c(2:3),
     names_to = "measure",
@@ -384,8 +398,8 @@ class_falo <- falo %>%
 
 pcss_falo <- falo %>% 
   select(client, pcss_pre, pcss_post) %>% 
-  rename("PCSS Pre Score" = pcss_pre,
-         "PCSS Post Score" = pcss_post) %>% 
+  rename("Pre Score" = pcss_pre,
+         "Post Score" = pcss_post) %>% 
   pivot_longer(
     cols = c(2:3),
     names_to = "measure",
@@ -394,8 +408,8 @@ pcss_falo <- falo %>%
 
 hit_falo <- falo %>% 
   select(client, hit_pre, hit_post) %>% 
-  rename("HIT Pre Score" = hit_pre,
-         "HIT Post Score" = hit_post) %>% 
+  rename("Pre Score" = hit_pre,
+         "Post Score" = hit_post) %>% 
    pivot_longer(
     cols = c(2:3),
     names_to = "measure",
@@ -406,16 +420,14 @@ hit_falo <- falo %>%
 ```{r falo plots, include=FALSE}
 
 p7 <- ggplot(brief_falo, aes(measure, score)) +
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = 65, ymax = 100),
-            fill = "lightgreen") +
   geom_hline(yintercept = 65, 
-             color = "darkgreen",
-             size = 3) +
+             linetype = "dashed",
+             size = 1) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
+  scale_x_discrete(limits = brief_positions) +
   scale_y_continuous(limits = c(0, 100),
                      breaks = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
-  coord_flip() +
   geom_text(aes(measure, score, label = score),
             nudge_y = -3,
             color = "white") +
@@ -425,7 +437,8 @@ p7 <- ggplot(brief_falo, aes(measure, score)) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 10),
         axis.title=element_text(size=10),
-        strip.text = element_text(size = 10)) +
+        strip.text = element_text(size = 10),
+        plot.caption = element_text(size = 10)) +
   labs(x = "",
        y = "T-score",
        title = "BRIEF Scores",
@@ -436,7 +449,7 @@ p7
 p8 <- ggplot(class_falo, aes(measure, score)) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
-  coord_flip() +
+  scale_x_discrete(limits = class_positions) +
   scale_y_continuous(limits = c(0, 60),
                      breaks = c(10, 20, 30, 40, 50, 60)) +
   geom_text(aes(measure, score, label = score),
@@ -457,15 +470,15 @@ p8 <- ggplot(class_falo, aes(measure, score)) +
 
 p9 <- ggplot(pcss_falo, aes(measure, score)) +
   geom_hline(yintercept = 30, 
-             color = "darkgreen",
-             size = 3) +
+             linetype = "dashed",
+             size = 1) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
-  coord_flip() +
+  scale_x_discrete(limits = pcss_positions) +
   scale_y_continuous(limits = c(0, 140),
                      breaks = c(20, 40, 60, 80, 100, 120, 140)) + 
   geom_text(aes(measure, score, label = score),
-            nudge_y = -3.5,
+            nudge_y = -3,
             color = "white") +
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.x = element_blank(),
@@ -473,7 +486,8 @@ p9 <- ggplot(pcss_falo, aes(measure, score)) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 10),
         axis.title=element_text(size=10),
-        strip.text = element_text(size = 10)) +
+        strip.text = element_text(size = 10),
+        plot.caption = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
        title = "PCSS Results",
@@ -483,11 +497,11 @@ p9
 
 p10 <- ggplot(hit_falo, aes(measure, score)) +
   geom_hline(yintercept = 50, 
-             color = "darkgreen",
-             size = 3) +
+             linetype = "dashed",
+             size = 1) +
   geom_col(fill = "blue", 
            alpha = 0.7) +
-  coord_flip() +
+  scale_x_discrete(limits = hit_positions) +
   scale_y_continuous(limits = c(0, 60),
                      breaks = c(10, 20, 30, 40, 50, 60)) + 
   geom_text(aes(measure, score, label = score),
@@ -499,7 +513,8 @@ p10 <- ggplot(hit_falo, aes(measure, score)) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5),
         axis.text = element_text(size = 10),
         axis.title=element_text(size=10),
-        strip.text = element_text(size = 10)) +
+        strip.text = element_text(size = 10),
+        plot.caption = element_text(size = 10)) +
   labs(x = "",
        y = "Score",
        title = "HIT Results",
