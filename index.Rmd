@@ -49,8 +49,10 @@ head(rm_prge)
 
 # PRGE Outcome Measures
 
-Column {data-width=650}
+Column {.tabset data-width=650}
 -----------------------------------------------------------------------
+
+
 
 ```{r outcome measures data organization, include=FALSE}
 head(outcome)
@@ -248,28 +250,35 @@ p3a <- ggplot(hit, aes(measure, score)) +
 p3a
 ```
 
-
-```{r prge brief, include=TRUE, fig.width=6}
-p1
+### BRIEF
+```{r prge brief, include=TRUE}
+ggplotly(p1)
 
 ```
 
-```{r prge class, include=TRUE, fig.width=6}
-p2
+
+### CLASS
+```{r prge class, include=TRUE}
+ggplotly(p2)
 ```
 
-Column {data-width=350}
------------------------------------------------------------------------
+
+### PCSS
 
 ```{r prge pcss, include=TRUE}
-p3
+ggplotly(p3)
 ```
+
+
+### HIT
 
 ```{r prge hit, include=TRUE}
-p3a
+ggplotly(p3a)
 ```
 
-# PRGE Repeated Meausures 
+
+# PRGE Repeated Measures
+
 Column {data-width=650}
 -----------------------------------------------------------------------
 
@@ -344,14 +353,13 @@ p6 <- ggplot(helpfulness, aes(session, help)) +
 p6
 ```
 
+
 ```{r status, include=TRUE, fig.align="left"}
 p4 
-
 ```
 
 Column {data-width=350}
 -----------------------------------------------------------------------
-
 
 ```{r effort, include=TRUE, fig.align="left"}
 p5
@@ -563,6 +571,7 @@ p7
 
 ```
 
+
 ```{r falo class, include=TRUE, fig.width=6}
 p8
 ```
@@ -573,6 +582,7 @@ Column {data-width=350}
 ```{r falo pcss, include=TRUE}
 falo_reactable
 ```
+
 
 ```{r falo hit, include=TRUE}
 p10
@@ -764,6 +774,7 @@ drkat_brief_plot
 
 ```
 
+
 ```{r drkat class, include=TRUE, fig.width=6}
 drkat_class_plot
 ```
@@ -771,9 +782,11 @@ drkat_class_plot
 Column {data-width=350}
 -----------------------------------------------------------------------
 
+
 ```{r drkat pcss, include=TRUE}
 drkat_pcss_plot
 ```
+
 
 ```{r drkat hit, include=TRUE}
 drkat_hit_plot
